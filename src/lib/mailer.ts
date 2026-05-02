@@ -12,13 +12,18 @@ function requiredEnv(name: string) {
 
 function getTransporter() {
   const port = Number(process.env.SMTP_PORT || 465);
+  const user = process.env.SMTP_USER || process.env.EMAIL_FROM || process.env.BUSINESS_EMAIL;
+
+  if (!user) {
+    throw new Error("Missing required environment variable: SMTP_USER");
+  }
 
   return nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp.gmail.com",
     port,
     secure: port === 465,
     auth: {
-      user: requiredEnv("SMTP_USER"),
+      user,
       pass: requiredEnv("SMTP_PASS"),
     },
   });
